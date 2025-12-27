@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Klinik Pondok</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        .batik-bg {
+            background-image: url('https://www.transparenttextures.com/patterns/batik.png');
+            background-color: #f0fdfa;
+            background-repeat: repeat;
+        }
+    </style>
+</head>
+<body class="batik-bg min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-6 border border-teal-100 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+                    {{ user.nama[0] }}
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Assalamu'alaikum, {{ user.nama }}</h1>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 bg-teal-100 text-teal-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                            Akses: {{ user.role | replace('_', ' ') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <a href="/logout" class="flex items-center gap-2 px-5 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm border border-red-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Keluar Sistem
+            </a>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg shadow-sm flex items-center gap-3">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                {{ messages[0] }}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% if user.role == 'admin' %}
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-teal-200 mb-8 transition-all">
+            <div class="bg-teal-700 px-6 py-4 flex items-center gap-3">
+                <div class="p-2 bg-teal-600 rounded-lg text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </div>
+                <h3 class="text-white font-bold">Kirim Laporan Medis Personal</h3>
+            </div>
+            <form action="/add_notif" method="POST" class="p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">1. Cari Nama Penerima</label>
+                        <div class="relative">
+                            <input type="text" id="penerimaSearch" onkeyup="filterNames()" placeholder="Ketik nama (misal: Subagyo)..." 
+                                   class="w-full px-4 py-2.5 mb-2 border border-teal-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-teal-50/50 text-sm">
+                            
+                            <select name="penerima_username" id="penerimaSelect" required size="4" 
+                                    class="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none overflow-y-auto text-sm bg-white">
+                                {% for r in recipients %}
+                                    <option value="{{ r.username }}" class="p-2 border-b border-gray-50 last:border-0 rounded-md cursor-pointer hover:bg-teal-50">
+                                        {{ r.nama }} ({{ r.role | replace('_', ' ') }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p class="text-[11px] text-gray-400 italic font-light">*Klik nama yang muncul untuk memilih</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">2. Detail Kondisi & Obat</label>
+                        <textarea name="pesan" required rows="6" 
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none text-sm leading-relaxed" 
+                                  placeholder="Contoh: Ananda Ali mengalami demam 38°C. Sudah diberikan Paracetamol 500mg. Mohon dipantau kondisinya."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-teal-200 flex justify-center items-center gap-2 uppercase tracking-widest text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    Kirim Notifikasi
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-teal-100">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-700 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    {% if user.role == 'admin' %}  Riwayat  {% else %} Laporan Medis Buah Hati Anda {% endif %}
+                </h3>
+                <span class="text-xs text-gray-400 font-medium">{{ notifications|length }} Pesan</span>
+            </div>
+
+            <div class="p-6 space-y-4 max-h-[500px] overflow-y-auto">
+                {% if notifications %}
+                    {% for n in notifications %}
+                    <div class="group p-5 rounded-2xl bg-white border border-gray-100 hover:border-teal-300 hover:shadow-md transition-all relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"></div>
+                        <div class="flex justify-between items-start mb-2">
+                            {% if user.role == 'admin' %}
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest bg-teal-50 px-2 py-0.5 rounded-full inline-block mb-1">
+                                    Kepada: {{ n.penerima_nama }}
+                                </span>
+                            </div>
+                            {% endif %}
+                            <span class="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded italic flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                {{ n.waktu }}
+                            </span>
+                        </div>
+                        <p class="text-gray-700 text-sm leading-relaxed">{{ n.pesan }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-16">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-50 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 00-.707.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                        </div>
+                        <p class="text-gray-400 text-sm italic italic">Belum ada catatan medis yang tersedia.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <p class="mt-8 text-center text-[10px] text-teal-800/40 uppercase tracking-[0.2em]">Sistem Informasi Klinik Pondok &bull; 2025</p>
+    </div>
+
+    <script>
+        function filterNames() {
+            let input = document.getElementById('penerimaSearch').value.toUpperCase();
+            let select = document.getElementById('penerimaSelect');
+            let options = select.getElementsByTagName('option');
+
+            for (let i = 0; i < options.length; i++) {
+                let txtValue = options[i].textContent || options[i].innerText;
+                if (txtValue.toUpperCase().indexOf(input) > -1) {
+                    options[i].style.display = "";
+                } else {
+                    options[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

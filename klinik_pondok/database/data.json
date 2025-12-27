@@ -1,0 +1,52 @@
+{
+    "users": [
+        {
+            "username": "admin",
+            "password": "123",
+            "role": "admin",
+            "nama": "Kang Admin Klinik"
+        },
+        {
+            "username": "guru1",
+            "password": "123",
+            "role": "guru",
+            "nama": "Ust. Ahmad"
+        },
+        {
+            "username": "ortu1",
+            "password": "123",
+            "role": "orang_tua",
+            "nama": "Bpk. Subagyo"
+        },
+        {
+            "username": "ortu2",
+            "password": "123",
+            "role": "orang_tua",
+            "nama": "Bpk. Susantono"
+        },
+        {
+            "username": "ortu3",
+            "password": "123",
+            "role": "orang_tua",
+            "nama": "Bpk. Alfath"
+        }
+    ],
+    "notifikasi": [
+        {
+            "penerima_role": "guru",
+            "pesan": "Santrinya Ustadz atas nama Ali izin sakit hari ini.",
+            "waktu": "2023-10-25 08:00"
+        },
+        {
+            "penerima_role": "orang_tua",
+            "pesan": "Anak Anda (Ali) sakit panas dan telah diberikan obat penurun panas oleh dokter Mangkubumi.",
+            "waktu": "2023-10-25 08:30"
+        },
+        {
+            "penerima_username": "ortu3",
+            "penerima_nama": "Bpk. Alfath",
+            "pesan": "Anak Anda (Cxavalier) sakit panas 39,2 dan telah diberikan obat penurun panas paracetamol 500 mg, dengan aturan 3x1 setelah makan oleh dokter Mangkubumi.",
+            "waktu": "2025-12-26 18:42"
+        }
+    ]
+}
